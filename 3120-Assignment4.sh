@@ -84,11 +84,13 @@ mapfile -t dfArray <<< "$dfResult"
 dfArray=("${dfArray[@]:1}")
 
 for dfLine in "${dfArray[@]}"; do
-    usageCheck="$(cut -d' ' -f5 <<< "$dfLine")"
+    # I dont know why, but on the cyberserver 
+    # its actually the 9th value and the 10 value for the mount
+    usageCheck="$(cut -d' ' -f9 <<< "$dfLine")"
     usageCheck=${usageCheck%\%}
 
     if [[ $usageCheck -ge $capPercentage ]]; then
-        mountLocal="$(cut -d' ' -f6 <<< "$dfLine")"
+        mountLocal="$(cut -d' ' -f10 <<< "$dfLine")"
         if [[ $usageCheck -ge 90 ]]; then
             subjectCritical="Critical Warning: the file system $mountLocal is greater than or equal to 90% capacity"
             messageToSend="$dfHeader\n$dfLine"
