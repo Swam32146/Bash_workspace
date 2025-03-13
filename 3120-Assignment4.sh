@@ -55,7 +55,7 @@ send_email()
     {
     for emailAddy in "${emailAddress[@]}"; do 
         # making sure there is a domain attatched
-        if [[! "$emailAddy" == "*@*" ]]; then
+        if [[ "$emailAddy" != "*@*" ]]; then
             emailAddy+="@cyberserver.uml.edu"
         fi
         mailx -s "$1" "$emailAddy" <<< "$(echo -e "$2")"
@@ -86,11 +86,13 @@ dfArray=("${dfArray[@]:1}")
 for dfLine in "${dfArray[@]}"; do
     # I dont know why, but on the cyberserver 
     # its actually the 9th value and the 10 value for the mount
-    usageCheck="$(cut -d' ' -f9 <<< "$dfLine")"
+    # So I will jsut remove the extra spaces
+    dfLine="$(echo "$dfLine" | tr -s ' ')"
+    usageCheck="$(cut -d' ' -f5 <<< "$dfLine")"
     usageCheck=${usageCheck%\%}
 
     if [[ $usageCheck -ge $capPercentage ]]; then
-        mountLocal="$(cut -d' ' -f10 <<< "$dfLine")"
+        mountLocal="$(cut -d' ' -f6 <<< "$dfLine")"
         if [[ $usageCheck -ge 90 ]]; then
             subjectCritical="Critical Warning: the file system $mountLocal is greater than or equal to 90% capacity"
             messageToSend="$dfHeader\n$dfLine"
